@@ -1,10 +1,12 @@
-import AdminPanel from "./components/AdminPanel.jsx"
+import AdminPanel from "./components/AdminPanel.jsx";
+import CouponClaim from "./components/CouponClaim.jsx";
 
 function App() {
   return (
     <>
-      <h1 class="text-3xl font-bold underline bg-red-400">Hello world!</h1>
-      <AdminPanel/>
+      {/* <h1 className="text-3xl font-bold underline bg-red-400">Hello world!</h1> */}
+      <AdminPanel />
+      <CouponClaim />
     </>
   );
 }
