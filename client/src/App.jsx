@@ -1,12 +1,24 @@
-import AdminPanel from "./components/AdminPanel.jsx";
-import CouponClaim from "./components/CouponClaim.jsx";
+// import AdminPanel from "./components/AdminPanel.jsx";
+// import CouponClaim from "./components/CouponClaim.jsx";
+
+//       <AdminPanel />
+//       <CouponClaim />
+
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor } from "./store/store.js";
+import { Provider } from "react-redux";
+import store from "./store/store.js";
 
 function App() {
   return (
     <>
-      {/* <h1 className="text-3xl font-bold underline bg-red-400">Hello world!</h1> */}
-      <AdminPanel />
-      <CouponClaim />
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <RouterProvider router={router} />
+        </PersistGate>
+      </Provider>
     </>
   );
 }
