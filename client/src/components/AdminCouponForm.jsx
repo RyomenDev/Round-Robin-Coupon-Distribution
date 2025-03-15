@@ -41,12 +41,11 @@ const AdminCouponForm = ({ editCoupon, onSuccess }) => {
       <div
         className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
         style={{
-          backgroundImage:
-            "url('https://source.unsplash.com/1600x900/?ecommerce,sale')",
+          backgroundImage: "url('https://picsum.photos/300/200')",
         }}
       >
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        {/* <div className="absolute inset-0 bg-black bg-opacity-50"></div> */}
 
         <div className="relative bg-white p-8 shadow-xl rounded-xl w-full max-w-lg mx-auto">
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
