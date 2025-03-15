@@ -5,7 +5,6 @@ import connectDB from "./src/config/db.js";
 
 
 
-
 dotenv.config();
 connectDB();
 
