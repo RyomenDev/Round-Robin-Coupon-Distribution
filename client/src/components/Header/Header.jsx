@@ -9,17 +9,12 @@ const Header = () => {
   const authStatus = useSelector((state) => state?.auth?.status);
   const userData = useSelector((state) => state?.auth?.userData);
   const userName = userData?.name;
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { topHeader } = HeaderData;
   const { logo, appName } = topHeader;
 
   const handleLogoClick = () => {
     navigate("/");
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
   };
 
   return (

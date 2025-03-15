@@ -18,6 +18,8 @@ const Login = () => {
     e.preventDefault();
     // console.log({email, password});
     setMessage(""); // Reset message
+    // console.log({ email, password });
+
     try {
       const data = await loginUser(email, password);
       const { token, user } = data;

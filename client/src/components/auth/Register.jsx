@@ -32,6 +32,8 @@ const Register = () => {
     if (!validateForm()) {
       return;
     }
+    // console.log({ name, email, password });
+
     try {
       await registerUser(name, email, password);
       setMessage("✅ Registration successful");
