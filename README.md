@@ -1,7 +1,7 @@
 # Round-Robin-Coupon-Distribution
 
 ## Project Setup & Structure
-1️⃣ Tech Stack
+### 1️⃣ Tech Stack
 - **Frontend:** React.js (Vite, Tailwind CSS, Axios, React Router)
 - **Backend:** Node.js (Express.js, Mongoose)
 - **Database:** MongoDB
