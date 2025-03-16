@@ -89,68 +89,67 @@ const CouponClaim = () => {
 
   return (
     <>
-      <p className="text-xl text-blue-600 font-semibold pl-10">
-        {userCount} users online
-      </p>
-      <div className="p-5 bg-gray-100 text-center">
-        <h2 className="text-lg font-bold">Your Coupon Code:</h2>
-        <p className="text-2xl text-green-600">
-          {assignedCoupon.code || "Assigning..."}
+      <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-[#4e2e24] via-[#91847e] to-[#523838] p-6">
+        <p className="text-xl text-white font-semibold">
+          {userCount} users online
         </p>
-        <button
-          onClick={() => claimCoupon(assignedCoupon._id)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-        >
-          Claim
-        </button>
-      </div>
-      <p className="text-center text-green-600 font-semibold">{message}</p>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-800 p-6">
-        <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+
+        <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-lg text-center mt-6">
+          <h2 className="text-xl font-bold text-gray-800">
+            🎟️ Your Coupon Code:
+          </h2>
+          <p className="text-3xl text-green-600 font-bold my-3">
+            {assignedCoupon.code || "Assigning..."}
+          </p>
+          <button
+            onClick={() => claimCoupon(assignedCoupon._id)}
+            className="px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg"
+          >
+            Claim
+          </button>
+          <p className="text-green-600 font-semibold mt-2">{message}</p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-3xl mt-10">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
             🎟️ Available & Claimed Coupons
           </h2>
 
           {/* Available Coupons */}
-          <h3 className="text-xl font-semibold mt-6 mb-2 text-green-700">
+          <h3 className="text-2xl font-semibold text-green-700">
             🟢 Available Coupons
           </h3>
           {availableCoupons.length > 0 ? (
-            <ul className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {availableCoupons.map((coupon) => (
-                <li
+                <div
                   key={coupon._id}
-                  className="p-4 bg-green-100 rounded-lg shadow-md transition hover:bg-green-200"
+                  className="bg-green-100 p-4 rounded-lg shadow-md hover:scale-105 transition"
                 >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <strong className="text-lg text-gray-900">
-                        {coupon.code}
-                      </strong>
-                      <p className="text-gray-700">{coupon.discount}% off</p>
-                      <small className="text-gray-500">
-                        Expires:{" "}
-                        {new Date(coupon.expirationDate).toDateString()}
-                      </small>
-                    </div>
-                  </div>
-                </li>
+                  <strong className="text-lg text-gray-900">
+                    {coupon.code}
+                  </strong>
+                  <p className="text-gray-700">{coupon.discount}% off</p>
+                  <small className="text-gray-500">
+                    Expires: {new Date(coupon.expirationDate).toDateString()}
+                  </small>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <p className="text-gray-600">No available coupons.</p>
           )}
 
           {/* Claimed Coupons */}
-          <h3 className="text-xl font-semibold mt-6 mb-2 text-purple-700">
+          <h3 className="text-2xl font-semibold text-purple-700 mt-8">
             ✅ Claimed Coupons
           </h3>
           {claimedCoupons.length > 0 ? (
-            <ul className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {claimedCoupons.map((coupon) => (
-                <li
+                <div
                   key={coupon._id}
-                  className="p-4 bg-gray-100 rounded-lg shadow-md"
+                  className="bg-gray-100 p-4 rounded-lg shadow-md hover:scale-105 transition"
                 >
                   <strong className="text-lg text-gray-900">
                     Code: {coupon.code}
@@ -159,9 +158,9 @@ const CouponClaim = () => {
                   <small className="text-gray-500">
                     Expires: {new Date(coupon.expirationDate).toDateString()}
                   </small>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <p className="text-gray-600">No claimed coupons yet.</p>
           )}
