@@ -97,7 +97,9 @@ const CouponClaim = () => {
       </p>
       <div className="p-5 bg-gray-100 text-center">
         <h2 className="text-lg font-bold">Your Coupon Code:</h2>
-        <p className="text-2xl text-green-600">{assignedCoupon || "Assigning..."}</p>
+        <p className="text-2xl text-green-600">
+          {assignedCoupon || "Assigning..."}
+        </p>
       </div>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-800 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl">
