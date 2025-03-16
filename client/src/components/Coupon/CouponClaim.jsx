@@ -1,9 +1,51 @@
 import { useState, useEffect } from "react";
 import { claimSingleCoupon, getCoupons } from "../../api";
+import { io } from "socket.io-client";
 
 const CouponClaim = () => {
   const [message, setMessage] = useState("");
   const [coupons, setCoupons] = useState([]); // Store all coupons
+  const [userCount, setUserCount] = useState(0);
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No authentication token found");
+      return; // Prevent WebSocket connection if no token
+    }
+    // console.log({ token });
+
+    // Check if WebSocket is already initialized
+    if (socket) return;
+
+    // Initialize WebSocket connection only when component mounts
+    const newSocket = io(`${import.meta.env.VITE_SERVER_URL}`, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 3000,
+      transports: ["websocket"],
+      auth: { token }, // Send token to server for authentication
+      //   query: { token }, // Send token via query parameters
+    });
+
+    setSocket(newSocket); // Store the socket instance
+
+    newSocket.on("connect", () => {
+      //   console.log("Connected to WebSocket Server");
+      newSocket.emit("pageReached", { page: "CouponClaim" }); // Notify server
+    });
+
+    newSocket.on("updateUserCount", (count) => {
+      fetchCoupons();
+      //   console.log("Updated User Count:", count);
+      setUserCount(count);
+    });
+
+    return () => {
+      newSocket.disconnect(); // Disconnect when component unmounts
+    };
+  }, []);
 
   // Fetch coupons (available + claimed by user)
   const fetchCoupons = async () => {
@@ -45,6 +87,9 @@ const CouponClaim = () => {
 
   return (
     <>
+      <p className="text-xl text-blue-600 font-semibold pl-10">
+        {userCount} users online
+      </p>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-800 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">

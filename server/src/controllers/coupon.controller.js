@@ -69,7 +69,7 @@ export const claimCoupon = async (req, res) => {
 // View Available & self claimed Coupons  (USER)
 
 export const getAllCoupon = async (req, res) => {
-  //   console.log("all coupons", req.userId);
+  // console.log("all coupons", req.userId);
 
   try {
     // Get user details
