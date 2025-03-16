@@ -1,4 +1,3 @@
-import express from "express";
 import cors from "cors";
 import connectDB from "./src/config/db.js";
 import { app } from "./src/app.js";
@@ -11,6 +10,7 @@ import http from "http";
 import { Server } from "socket.io";
 
 const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: conf.FRONTEND_URL,
@@ -21,7 +21,11 @@ const io = new Server(server, {
   //   pingTimeout: 25000, // Extends the timeout period before disconnecting
 });
 
+const coupons = ["COUPON10", "DISCOUNT20", "SAVE30", "OFFER40"];
+let currentIndex = 0;
+
 let activeUsers = new Map(); // Use a Map instead of a Set to store IPs with socket IDs
+const guests = new Map(); // Store guest users with socket ID
 
 // Middleware to verify token for WebSocket connections
 io.use((socket, next) => {
@@ -57,6 +61,15 @@ io.on("connection", (socket, next) => {
   activeUsers.set(socket.id, { ip: userIp });
 
   io.emit("updateUserCount", activeUsers.size);
+
+  // Assign a coupon in round-robin fashion
+  const assignedCoupon = coupons[currentIndex];
+  currentIndex = (currentIndex + 1) % coupons.length; // Move to next coupon
+
+  guests.set(socket.id, assignedCoupon); // Store assigned coupon
+
+  // Send assigned coupon to the guest user
+  socket.emit("couponAssigned", assignedCoupon);
 
   socket.on("disconnect", () => {
     // console.log(`User disconnected: ${socket.id}`);

@@ -7,6 +7,7 @@ const CouponClaim = () => {
   const [coupons, setCoupons] = useState([]); // Store all coupons
   const [userCount, setUserCount] = useState(0);
   const [socket, setSocket] = useState(null);
+  const [assignedCoupon, setAssignedCoupon] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -34,6 +35,10 @@ const CouponClaim = () => {
     newSocket.on("connect", () => {
       //   console.log("Connected to WebSocket Server");
       newSocket.emit("pageReached", { page: "CouponClaim" }); // Notify server
+    });
+
+    newSocket.on("couponAssigned", (assignedCoupon) => {
+      setAssignedCoupon(assignedCoupon);
     });
 
     newSocket.on("updateUserCount", (count) => {
@@ -90,6 +95,10 @@ const CouponClaim = () => {
       <p className="text-xl text-blue-600 font-semibold pl-10">
         {userCount} users online
       </p>
+      <div className="p-5 bg-gray-100 text-center">
+        <h2 className="text-lg font-bold">Your Coupon Code:</h2>
+        <p className="text-2xl text-green-600">{assignedCoupon || "Assigning..."}</p>
+      </div>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-800 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
