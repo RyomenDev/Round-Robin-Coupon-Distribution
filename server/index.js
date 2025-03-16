@@ -1,21 +1,27 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./src/config/db.js";
+import { app } from "./src/app.js";
+import conf from "./conf.js";
 
 import couponRoutes from "./src/routes/couponRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
 
-dotenv.config();
-connectDB();
-
-const app = express();
-
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
-// app.use(cors());
-app.use(express.json());
-
 app.use("/api/coupons", couponRoutes);
 app.use("/api/admin", adminRoutes);
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+const PORT = conf.PORT || 5000;
+
+// Connect to MongoDB and start the server
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`⚙️ Server is running at port: ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error.message);
+  }
+};
+
+startServer();

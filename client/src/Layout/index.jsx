@@ -12,11 +12,8 @@ const Layout = () => {
       {/* Top Header */}
       {showHeader && <Header />}
 
-      <div className="flex">
-        {/* Main Content */}
-        <div className="flex-1 bg-gray-50 transition-all duration-200">
-          <Outlet />
-        </div>
+      <div className="flex-1 bg-gray-50 transition-all duration-200">
+        <Outlet />
       </div>
 
       {/* Footer */}

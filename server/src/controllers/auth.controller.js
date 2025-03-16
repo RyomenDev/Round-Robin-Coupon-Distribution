@@ -1,9 +1,13 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
-import conf from "../conf/conf.js";
+import conf from "../../conf.js";
+
+// import dotenv from "dotenv";
+// dotenv.config();
 
 const JWT_SECRET = conf.JWT_SECRET;
+console.log({ JWT_SECRET });
 
 // Helper function to filter user data (excluding sensitive info)
 const filterUserData = (user) => ({
@@ -43,9 +47,8 @@ export const registerUser = async (req, res) => {
     const newUser = new User({
       name,
       email: normalizedEmail,
-      //   password: hashedPassword,
       password, // Raw password, will be hashed in pre-save middleware
-      userType: userType || "student", // Default to "student"
+      userType: userType || "user",
     });
 
     await newUser.save();
@@ -73,34 +76,28 @@ export const registerUser = async (req, res) => {
 
 // User Login (Email & Password)
 export const loginUserWithEmail = async (req, res) => {
-  // console.log(req.body);
+  //   console.log(req.body);
 
   try {
     const { email, password } = req.body;
     // console.log({ email, password });
-
     if (!email || !password) {
       return res.status(400).json({
         message: "All fields are required.",
         error: "All fields are required",
       });
     }
-
     // Convert email to lowercase for consistency
     const normalizedEmail = email.toLowerCase();
     // console.log({ normalizedEmail,password });
-
     const user = await User.findOne({ email: normalizedEmail });
-
     // console.log({ user });
-
     if (!user) {
       return res.status(400).json({
         message: "Invalid email or password.",
         error: "Invalid email or password.",
       });
     }
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
@@ -108,11 +105,9 @@ export const loginUserWithEmail = async (req, res) => {
         error: "Invalid email or password.",
       });
     }
-
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "7d",
     });
-
     return res.status(200).json({
       message: "Login successful.",
       token,

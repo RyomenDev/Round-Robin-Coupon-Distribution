@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
+import conf from "../../conf.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = conf.JWT_SECRET;
 
 export async function verifyToken(req, res, next) {
   //   console.log("req.headers");

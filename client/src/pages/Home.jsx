@@ -28,8 +28,8 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleStartQuiz = () => {
-    navigate("/quiz");
+  const handleStartCouponCapture = () => {
+    navigate("/capture");
   };
 
   return (
@@ -43,7 +43,7 @@ export default function HomePage() {
         interval={3000}
         className="absolute top-0 left-0 w-full h-full z-0"
       >
-        {quizImages.map((image, index) => (
+        {quizImages?.map((image, index) => (
           <div key={index} className="w-full h-screen">
             <img
               src={image}
@@ -59,10 +59,10 @@ export default function HomePage() {
         <motion.h1
           className="text-4xl md:text-6xl font-bold"
           initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}  
           transition={{ duration: 1 }}
         >
-          Quizo
+          Round-Robin-Coupon-Distribution
         </motion.h1>
 
         {/* Auto-Sliding Questions */}
@@ -86,9 +86,9 @@ export default function HomePage() {
         >
           <button
             className="px-6 py-3 text-lg bg-yellow-500 hover:bg-yellow-600 shadow-xl text-white rounded-md transition"
-            onClick={handleStartQuiz}
+            onClick={handleStartCouponCapture}
           >
-            Start Quiz
+            Start Capture
           </button>
         </motion.div>
       </div>
