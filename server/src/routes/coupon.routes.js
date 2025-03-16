@@ -16,35 +16,6 @@ const limiter = rateLimit({
   message: "❌ You can only claim a coupon once per minute.",
 });
 
-// Create a new coupon
-router.post("/add", async (req, res) => {
-  try {
-    const { code, discount, expirationDate } = req.body;
-    const newCoupon = new Coupon({ code, discount, expirationDate });
-    await newCoupon.save();
-    res.status(201).json({ message: "Coupon added successfully!" });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to add coupon." });
-  }
-});
-
-// Update an existing coupon
-router.put("/update/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { code, discount, expirationDate, isActive } = req.body;
-    const updatedCoupon = await Coupon.findByIdAndUpdate(
-      id,
-      { code, discount, expirationDate, isActive },
-      { new: true }
-    );
-    if (!updatedCoupon) return res.status(404).json({ error: "Coupon not found" });
-    res.json({ message: "Coupon updated successfully!", updatedCoupon });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to update coupon." });
-  }
-});
-
 // Claim Coupon
 router.post("/claim", limiter, async (req, res) => {
   const userIp = req.ip;

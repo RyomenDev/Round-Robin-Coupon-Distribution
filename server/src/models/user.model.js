@@ -18,7 +18,7 @@ const userSchema = new Schema(
     },
     userType: {
       type: String,
-      enum: ["user", "Admin"],
+      enum: ["User", "Admin"],
       required: true,
       default: "user",
     },

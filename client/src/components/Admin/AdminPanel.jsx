@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import AdminCouponForm from "./AdminCouponForm";
+import { getAllCoupons } from "../../api";
 
 const AdminPanel = () => {
   const [coupons, setCoupons] = useState([]);
@@ -12,7 +12,7 @@ const AdminPanel = () => {
 
   const fetchCoupons = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/coupons");
+      const data = await getAllCoupons();
       //   console.log("Fetched Coupons:", data);
       setCoupons(data);
       //   setCoupons(Array.isArray(data) ? data : []); // Ensure `data` is an array
@@ -50,7 +50,7 @@ const AdminPanel = () => {
           <div className="mt-6">
             {coupons.length > 0 ? (
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {coupons.map((coupon) => (
+                {coupons?.map((coupon) => (
                   <li
                     key={coupon._id}
                     className="bg-gray-100 p-4 rounded-lg shadow-md flex justify-between items-center"

@@ -17,44 +17,45 @@ const Header = () => {
     navigate("/");
   };
 
-  return (
-    <header className="relative top-0 left-0 w-full z-50 flex items-center justify-between bg-gradient-to-b from-[#4E2A1E] via-[#5C4033] to-[#3B2F2F] text-white py-4 px-6 shadow-lg">
-      {/* Logo Section */}
-      <div
-        className="flex items-center gap-2 cursor-pointer hover:shadow-lg rounded-lg transition-all duration-300"
-        onClick={handleLogoClick}
-      >
-        <img
-          src={logo}
-          alt="HealthBridge"
-          className="w-auto h-10 md:h-14 transition-transform duration-300 hover:scale-105"
-        />
-        <div className="text-xl font-semibold md:text-2xl hover:text-indigo-400 transition-all duration-300">
-          {appName}
-        </div>
-      </div>
+  const adminPanelClickHandler = () => {
+    navigate("/admin");
+  };
 
-      {/* Authentication & Language Section */}
-      <div
-        className={` md:flex md:relative md:top-0 md:bg-transparent md:shadow-none md:p-0 md:space-x-6 md:flex-row`}
-      >
-        {/* Authentication Section */}
-        <div className="text-center">
+  return (
+    <>
+      <header className="z-50 flex items-center justify-between px-6 py-4 shadow-lg bg-gradient-to-b from-[#4E2A1E] via-[#5C4033] to-[#3B2F2F] text-white">
+        {/* Logo Section */}
+        <div
+          className="flex items-center gap-3 cursor-pointer transition-transform duration-300 hover:scale-105"
+          onClick={handleLogoClick}
+        >
+          <img src={logo} alt={appName} className="h-12 md:h-14 w-auto" />
+          <span className="text-xl font-bold md:text-2xl hover:text-indigo-400">
+            {appName}
+          </span>
+        </div>
+
+        {/* Auth & Admin Section */}
+        <div className="flex items-center gap-4">
           {authStatus ? (
-            <div className="flex flex-col items-center md:flex-row md:gap-4">
-              <span className="text-lg font-semibold text-white">
+            <div className="flex items-center gap-4">
+              <span className="text-lg font-semibold hidden md:block">
                 Hello, {userName}
               </span>
+              <button
+                onClick={adminPanelClickHandler}
+                className="px-4 py-2 text-lg font-medium bg-indigo-500 rounded-lg hover:bg-indigo-600 transition duration-300"
+              >
+                Admin Panel
+              </button>
               <LogoutBtn />
             </div>
           ) : (
-            <div className="flex flex-col gap-3 items-center md:flex-row md:gap-4">
-              <LoginButton />
-            </div>
+            <LoginButton />
           )}
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };
 

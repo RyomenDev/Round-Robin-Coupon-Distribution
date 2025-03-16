@@ -4,9 +4,8 @@ import conf from "../../conf.js";
 const JWT_SECRET = conf.JWT_SECRET;
 
 export async function verifyToken(req, res, next) {
-  //   console.log("req.headers");
-
   const authHeader = req.header("Authorization");
+  //   console.log({ authHeader });
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
@@ -18,7 +17,7 @@ export async function verifyToken(req, res, next) {
     const decoded = jwt.verify(token, JWT_SECRET);
     // console.log({ decoded });
 
-    req.user = decoded; // Attach decoded user info to request
+    req.userId = decoded.userId; // Attach decoded user info to request
     next();
   } catch (err) {
     return res.status(403).json({ error: "Invalid or expired token" });

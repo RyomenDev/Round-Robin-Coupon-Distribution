@@ -1,8 +1,7 @@
 import axios from "axios";
 
 // Set up base URL for the API
-// const API_BASE_URL = `${import.meta.env.VITE_SERVER_URL}/api/auth`;
-const API_BASE_URL = `http://localhost:5000/api/auth`;
+const API_BASE_URL = `${import.meta.env.VITE_SERVER_URL}/api/auth`;
 
 export const loginUser = async (email, password) => {
   //   console.log({ email, password });
@@ -27,9 +26,9 @@ export const registerUser = async (name, email, password) => {
       email,
       password,
     });
-    console.log({ response });
+    // console.log({ response });
 
-    // return response.data;
+    return response.data;
   } catch (error) {
     let data = error.response.data;
     console.log({ data });

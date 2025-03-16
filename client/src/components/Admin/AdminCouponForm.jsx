@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { addNewCoupon, updateCoupon } from "../../api";
 
 const AdminCouponForm = ({ editCoupon, onSuccess }) => {
   const [code, setCode] = useState(editCoupon?.code || "");
@@ -22,17 +22,14 @@ const AdminCouponForm = ({ editCoupon, onSuccess }) => {
 
     try {
       if (editCoupon) {
-        await axios.put(
-          `http://localhost:5000/api/coupons/update/${editCoupon._id}`,
-          couponData
-        );
+        await updateCoupon(editCoupon._id, couponData);
       } else {
-        await axios.post("http://localhost:5000/api/coupons/add", couponData);
+        await addNewCoupon(couponData);
       }
       alert("Coupon saved successfully!");
       onSuccess();
     } catch (error) {
-      alert("Error saving coupon");
+      alert("Error saving coupon", error.message);
     }
   };
 

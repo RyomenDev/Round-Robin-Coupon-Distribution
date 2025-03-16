@@ -5,7 +5,7 @@ import {
 } from "react-router-dom";
 import Layout from "../Layout";
 import { Home } from "../pages";
-import { Login, Register } from "../components";
+import { Login, Register, AdminPanel } from "../components";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -14,6 +14,7 @@ const router = createBrowserRouter(
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="admin" element={<AdminPanel />} />
       </Route>
     </Route>
   )

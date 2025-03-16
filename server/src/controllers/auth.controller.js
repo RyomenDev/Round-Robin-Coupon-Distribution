@@ -3,11 +3,8 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import conf from "../../conf.js";
 
-// import dotenv from "dotenv";
-// dotenv.config();
 
 const JWT_SECRET = conf.JWT_SECRET;
-console.log({ JWT_SECRET });
 
 // Helper function to filter user data (excluding sensitive info)
 const filterUserData = (user) => ({
@@ -21,7 +18,7 @@ export const registerUser = async (req, res) => {
   //   console.log("registerUser");
 
   try {
-    const { name, email, password, userType } = req.body;
+    const { name, email, password, userType: reqUserType } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -43,12 +40,21 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    let finalUserType = reqUserType || "User"; // Default userType is "User"
+    const adminEmails = conf.ADMIN_EMAILS?.split(",") || []; // Store admin emails in .env
+
+    if (adminEmails.includes(normalizedEmail)) {
+      finalUserType = "Admin";
+    }
+
+    // console.log({ finalUserType });
+
     // Create new user
     const newUser = new User({
       name,
       email: normalizedEmail,
       password, // Raw password, will be hashed in pre-save middleware
-      userType: userType || "user",
+      userType: finalUserType,
     });
 
     await newUser.save();
