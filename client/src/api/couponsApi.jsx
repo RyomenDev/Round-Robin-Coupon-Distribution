@@ -21,13 +21,17 @@ const getAuthHeaders = () => {
 
 // Handle API errors
 const handleError = (error) => {
-  console.error("API Error:", error);
-  throw error.response?.data?.message || "An error occurred";
+  //   console.error("API Error:", error);
+  throw (
+    error?.response?.data?.message ||
+    error?.response?.data ||
+    "An error occurred"
+  );
 };
 
 // Add a new coupon
 export const claimSingleCoupon = async ({ couponId }) => {
-  //   console.log({ couponId });
+  console.log({ couponId });
   try {
     const response = await apiClient.post(
       "/claim",
@@ -36,8 +40,11 @@ export const claimSingleCoupon = async ({ couponId }) => {
         headers: getAuthHeaders(),
       }
     );
+    // console.log("Response",response);
+
     return response.data;
   } catch (error) {
+    // console.log("Error", error.response.data);
     handleError(error);
   }
 };

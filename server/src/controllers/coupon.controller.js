@@ -1,28 +1,84 @@
+import { Server } from "socket.io";
+import jwt from "jsonwebtoken";
+import conf from "../../conf.js";
 import Coupon from "../models/Coupon.js";
 import { User } from "../models/user.model.js";
 
+const coupons = ["COUPON10", "DISCOUNT20", "SAVE30", "OFFER40"];
+let currentIndex = 0;
+let activeUsers = new Map();
+const guests = new Map(); // Store guest users with assigned coupons
 const claimHistory = new Map(); // Tracks claims (IP & Session)
-const claimCooldown = 300 * 1000; // 1-minute cooldown
+const claimCooldown = 300 * 1000; // 5-minute cooldown
+
+export function initializeSocket(server) {
+  const io = new Server(server, {
+    cors: {
+      origin: conf.FRONTEND_URL,
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
+    //   pingInterval: 5000, // Prevents timeouts by sending a ping every 5 seconds
+    //   pingTimeout: 25000, // Extends the timeout period before disconnecting
+  });
+
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token) return next(new Error("Unauthorized"));
+
+    try {
+      const decoded = jwt.verify(token, conf.JWT_SECRET);
+      socket.userId = decoded.userId;
+      next();
+    } catch (err) {
+      return next(new Error("Invalid or expired token"));
+    }
+  });
+
+  io.on("connection", async (socket) => {
+    const userIp = socket.handshake.address;
+    console.log(`User connected: ${socket.id} from IP: ${userIp}`);
+
+    activeUsers.set(socket.id, { ip: userIp });
+    io.emit("updateUserCount", activeUsers.size);
+
+    // Assign available coupon
+    const availableCoupon = await Coupon.find({ isClaimed: false });
+    const assignedCoupon = availableCoupon[currentIndex];
+    currentIndex = (currentIndex + 1) % availableCoupon.length;
+
+    // console.log({ assignedCoupon, currentIndex });
+
+    if (assignedCoupon) {
+      guests.set(socket.id, assignedCoupon.code);
+      socket.emit("couponAssigned", assignedCoupon);
+    }
+
+    socket.on("disconnect", () => {
+      console.log(`User disconnected: ${socket.id}`);
+      activeUsers.delete(socket.id);
+      io.emit("updateUserCount", activeUsers.size);
+    });
+  });
+
+  return io;
+}
 
 export const claimCoupon = async (req, res) => {
+  console.log("hi");
+  console.log(req.body);
+
   try {
-    // Extract client IP (handles proxies)
     const clientIp =
       req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
-
-    // console.log("Client IP:", clientIp);
-
-    // Extract session ID from cookies or create a new one
-    let userSession = req.cookies.sessionId;
-    if (!userSession) {
-      userSession = Date.now().toString();
+    let userSession = req.cookies.sessionId || Date.now().toString();
+    if (!req.cookies.sessionId) {
       res.cookie("sessionId", userSession, {
         maxAge: claimCooldown,
         httpOnly: true,
       });
     }
 
-    // Prevent multiple claims within cooldown period
     if (claimHistory.has(clientIp) || claimHistory.has(userSession)) {
       return res
         .status(429)
@@ -30,32 +86,21 @@ export const claimCoupon = async (req, res) => {
     }
 
     const { couponId } = req.body;
-
-    // Validate coupon ID
-    if (!couponId) {
+    if (!couponId)
       return res.status(400).json({ message: "Coupon ID is required!" });
-    }
 
-    // Find the specific coupon by ID and check if it's available
-    const coupon = await Coupon.findOne({
-      _id: couponId,
-      isClaimed: false,
-    });
-
-    if (!coupon) {
+    const coupon = await Coupon.findOne({ _id: couponId, isClaimed: false });
+    if (!coupon)
       return res
         .status(400)
         .json({ message: "This coupon is unavailable or already claimed!" });
-    }
 
-    // Claim the specific coupon
     coupon.isClaimed = true;
     coupon.claimedBy = clientIp;
     coupon.claimedIp = clientIp;
     coupon.claimedAt = new Date();
     await coupon.save();
 
-    // Store claim history
     claimHistory.set(clientIp, true);
     claimHistory.set(userSession, true);
 
@@ -66,31 +111,19 @@ export const claimCoupon = async (req, res) => {
   }
 };
 
-// View Available & self claimed Coupons  (USER)
-
 export const getAllCoupon = async (req, res) => {
-  // console.log("all coupons", req.userId);
-
   try {
-    // Get user details
     const user = await User.findById(req.userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
-    }
-    // console.log({user});
+    if (!user) return res.status(404).json({ error: "User not found." });
 
     let coupons;
-
     if (user.userType === "Admin") {
-      // Admin: Fetch all coupons
       coupons = await Coupon.find();
     } else {
-      // User: Fetch only available and self-claimed coupons
       coupons = await Coupon.find({
         $or: [{ isClaimed: false }, { claimedBy: req.ip }],
       }).select("code discount expirationDate isClaimed claimedBy");
     }
-    // console.log({ coupons });
 
     res.json(coupons);
   } catch (error) {
@@ -98,9 +131,3 @@ export const getAllCoupon = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch coupons." });
   }
 };
-
-// Admin View Coupons
-// router.get("/", async (req, res) => {
-//   const coupons = await Coupon.find();
-//   res.json(coupons);
-// });

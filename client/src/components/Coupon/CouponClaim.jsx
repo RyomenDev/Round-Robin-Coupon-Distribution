@@ -38,6 +38,7 @@ const CouponClaim = () => {
     });
 
     newSocket.on("couponAssigned", (assignedCoupon) => {
+    //   console.log(assignedCoupon);
       setAssignedCoupon(assignedCoupon);
     });
 
@@ -72,12 +73,8 @@ const CouponClaim = () => {
       setMessage(data.message);
       fetchCoupons(); // Refresh coupon list after claiming
     } catch (error) {
-      console.error(error.response?.data);
-      setMessage(
-        error?.response?.data.message ||
-          error?.response?.data ||
-          "Error claiming coupon"
-      );
+      console.error(error);
+      setMessage(error || "Error claiming coupon");
     }
   };
 
@@ -98,15 +95,21 @@ const CouponClaim = () => {
       <div className="p-5 bg-gray-100 text-center">
         <h2 className="text-lg font-bold">Your Coupon Code:</h2>
         <p className="text-2xl text-green-600">
-          {assignedCoupon || "Assigning..."}
+          {assignedCoupon.code || "Assigning..."}
         </p>
+        <button
+          onClick={() => claimCoupon(assignedCoupon._id)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          Claim
+        </button>
       </div>
+      <p className="text-center text-green-600 font-semibold">{message}</p>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-800 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
             🎟️ Available & Claimed Coupons
           </h2>
-          <p className="text-center text-green-600 font-semibold">{message}</p>
 
           {/* Available Coupons */}
           <h3 className="text-xl font-semibold mt-6 mb-2 text-green-700">
@@ -130,12 +133,6 @@ const CouponClaim = () => {
                         {new Date(coupon.expirationDate).toDateString()}
                       </small>
                     </div>
-                    <button
-                      onClick={() => claimCoupon(coupon._id)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                    >
-                      Claim
-                    </button>
                   </div>
                 </li>
               ))}

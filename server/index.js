@@ -2,7 +2,7 @@ import cors from "cors";
 import connectDB from "./src/config/db.js";
 import { app } from "./src/app.js";
 import http from "http";
-import { initializeSocket } from "./src/controllers/socket.js"; // Import WebSocket logic
+import { initializeSocket } from "./src/controllers/coupon.controller.js"; // Import WebSocket logic
 import conf from "./conf.js";
 
 const server = http.createServer(app);
