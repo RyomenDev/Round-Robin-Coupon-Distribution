@@ -1,4 +1,3 @@
-import { useState } from "react";
 import HeaderData from "../../Data/HeaderData.jsx";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -9,6 +8,8 @@ const Header = () => {
   const authStatus = useSelector((state) => state?.auth?.status);
   const userData = useSelector((state) => state?.auth?.userData);
   const userName = userData?.name;
+  const userType = userData?.userType;
+  //   console.log({ userType });
 
   const { topHeader } = HeaderData;
   const { logo, appName } = topHeader;
@@ -42,12 +43,14 @@ const Header = () => {
               <span className="text-lg font-semibold hidden md:block">
                 Hello, {userName}
               </span>
-              <button
-                onClick={adminPanelClickHandler}
-                className="px-4 py-2 text-lg font-medium bg-indigo-500 rounded-lg hover:bg-indigo-600 transition duration-300"
-              >
-                Admin Panel
-              </button>
+              {userType === "Admin" && (
+                <button
+                  onClick={adminPanelClickHandler}
+                  className="px-4 py-2 text-lg font-medium bg-indigo-500 rounded-lg hover:bg-indigo-600 transition duration-300"
+                >
+                  Admin Panel
+                </button>
+              )}
               <LogoutBtn />
             </div>
           ) : (
