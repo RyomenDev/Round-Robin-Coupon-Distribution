@@ -6,7 +6,7 @@ import { User } from "../models/user.model.js";
 // Create a new coupon
 export const addNewCoupon = async (req, res) => {
   try {
-    console.log(req.body, req.userId);
+    // console.log(req.body, req.userId);
 
     // Find the user
     const user = await User.findById(req.userId);

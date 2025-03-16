@@ -29,7 +29,7 @@ export default function HomePage() {
   }, []);
 
   const handleStartCouponCapture = () => {
-    navigate("/capture");
+    navigate("/coupon-capture");
   };
 
   return (

@@ -5,7 +5,7 @@ import {
 } from "react-router-dom";
 import Layout from "../Layout";
 import { Home } from "../pages";
-import { Login, Register, AdminPanel } from "../components";
+import { Login, Register, AdminPanel, CouponCapture } from "../components";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -15,6 +15,7 @@ const router = createBrowserRouter(
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="admin" element={<AdminPanel />} />
+        <Route path="coupon-capture" element={<CouponCapture />} />
       </Route>
     </Route>
   )

@@ -52,6 +52,8 @@ app.use((req, res, next) => {
 
 // Middleware for parsing JSON, cookies, and serving static files
 app.use(express.json());
+app.set("trust proxy", "loopback"); // Trust only localhost
+
 
 // app.use(express.static("public"));
 app.use(express.static(path.join(process.cwd(), "public")));

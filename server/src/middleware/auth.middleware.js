@@ -5,7 +5,7 @@ const JWT_SECRET = conf.JWT_SECRET;
 
 export async function verifyToken(req, res, next) {
   const authHeader = req.header("Authorization");
-  //   console.log({ authHeader });
+    // console.log({ authHeader });
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
