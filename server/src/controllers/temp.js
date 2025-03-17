@@ -104,3 +104,147 @@ export function initializeSocket(server) {
 
   return io;
 }
+
+io.on("connection", async (socket) => {
+  const userIp = socket.handshake.address;
+  const userId = socket.userId;
+
+  console.log(
+    `User connected: ${socket.id} with userId: ${userId} from IP: ${userIp}`
+  );
+
+  activeUsers.set(socket.id, { userId, ip: userIp });
+  io.emit("updateUserCount", activeUsers.size);
+
+  // Fetch unclaimed coupons
+  const availableCoupons = await Coupon.find({ isClaimed: false });
+
+  if (availableCoupons.length === 0) {
+    socket.emit("noCouponsAvailable");
+    return;
+  }
+
+  // Ensure currentIndex stays within bounds
+  currentIndex = currentIndex % availableCoupons.length;
+
+  // Find a coupon that is not yet assigned
+  let assignedCoupon = null;
+  for (let i = 0; i < availableCoupons.length; i++) {
+    let index = (currentIndex + i) % availableCoupons.length; // Rotate through coupons
+    let coupon = availableCoupons[index];
+
+    if (!assignedCoupons.has(coupon.code)) {
+      assignedCoupon = coupon;
+      assignedCoupons.add(coupon.code);
+      guests.set(socket.id, { userId, ip: userIp, coupon: coupon.code });
+      currentIndex = (index + 1) % availableCoupons.length; // Move to the next coupon
+      break;
+    }
+  }
+
+  if (assignedCoupon) {
+    socket.emit("couponAssigned", assignedCoupon);
+  } else {
+    socket.emit("noCouponsAvailable");
+  }
+
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
+
+    // Remove user from active users
+    activeUsers.delete(socket.id);
+    io.emit("updateUserCount", activeUsers.size);
+
+    // Release the coupon back into availability
+    const userData = guests.get(socket.id);
+    if (userData) {
+      assignedCoupons.delete(userData.coupon);
+      guests.delete(socket.id);
+    }
+  });
+
+  //  console.log("Assigned Coupons:", assignedCoupons.size);
+  //  for (let i of assignedCoupons) {
+  //    console.log(i);
+  //  }
+});
+
+io.on("connection", async (socket) => {
+  const userIp = socket.handshake.address;
+  const userId = socket.userId;
+
+  console.log(
+    `User connected: ${socket.id} with userId: ${userId} from IP: ${userIp}`
+  );
+
+  activeUsers.set(socket.id, { userId, ip: userIp });
+  io.emit("updateUserCount", activeUsers.size);
+
+  // Fetch unclaimed coupons
+  const availableCoupons = await Coupon.find({ isClaimed: false });
+
+  if (availableCoupons.length === 0) {
+    socket.emit("noCouponsAvailable");
+    return;
+  }
+
+  // Ensure currentIndex stays within bounds
+  currentIndex = currentIndex % availableCoupons.length;
+
+  // Find a coupon that is not yet assigned
+  let assignedCoupon = null;
+  for (let i = 0; i < availableCoupons.length; i++) {
+    let index = (currentIndex + i) % availableCoupons.length; // Rotate through coupons
+    let coupon = availableCoupons[index];
+
+    if (!assignedCoupons.has(coupon.code)) {
+      assignedCoupon = coupon;
+      assignedCoupons.add(coupon.code);
+      guests.set(socket.id, {
+        userId,
+        ip: userIp,
+        coupon: coupon.code,
+        assignedAt: Date.now(),
+      });
+      currentIndex = (index + 1) % availableCoupons.length; // Move to the next coupon
+      break;
+    }
+  }
+
+  if (assignedCoupon) {
+    socket.emit("couponAssigned", assignedCoupon);
+
+    // Auto de-assign after 30 seconds
+    setTimeout(() => {
+      if (guests.has(socket.id)) {
+        console.log(`expired coupon`);
+        const guestData = guests.get(socket.id);
+        assignedCoupons.delete(guestData.coupon);
+        guests.delete(socket.id);
+        socket.emit("couponExpired", { message: "Your coupon has expired" });
+      }
+    }, COUPON_TIMEOUT);
+  } else {
+    socket.emit("noCouponsAvailable");
+  }
+
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
+
+    // Remove user from active users
+    activeUsers.delete(socket.id);
+    io.emit("updateUserCount", activeUsers.size);
+
+    // Release the coupon back into availability
+    if (guests.has(socket.id)) {
+      const userData = guests.get(socket.id);
+      assignedCoupons.delete(userData.coupon);
+      guests.delete(socket.id);
+    }
+  });
+
+  console.log("Assigned Coupons:", assignedCoupons.size);
+  for (let i of assignedCoupons) {
+    console.log(i);
+  }
+});
