@@ -5,9 +5,47 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 import path from "path";
 import conf from "../conf.js";
+import http from "http";
+import { initializeSocket } from "./controllers/coupon.controller.js"; // Import WebSocket logic
+// import { initializeSocket, io }
 
 const app = express();
+
+// ✅ Create HTTP server
+const server = http.createServer(app);
+
+// ✅ Initialize Socket.io
+const io = initializeSocket(server);
+// initializeSocket(server);
+
+// if (!io) {
+//   console.error("❌ Failed to initialize Socket.io");
+// } else {
+//   console.log("✅ Socket.io initialized successfully");
+// }
+// console.log({ io });
+
+// ✅ Middleware to attach "io" instance to req
+app.use((req, res, next) => {
+  if (!io) {
+    // console.error("❌ io is undefined in middleware");
+  } else {
+    req.io = io;
+    // console.log(`✅ socket io attached to request for: ${req.method} ${req.url}`);
+  }
+  next();
+});
+
+// ✅ Log every incoming request for debugging
+// app.use((req, res, next) => {
+//   console.log(`📢 Incoming Request: ${req.method} ${req.url}`);
+//   next();
+// });
+
+// ✅ Middleware for parsing JSON and cookies
 app.use(bodyParser.json());
+app.use(express.json());
+app.use(cookieParser());
 
 // Apply security headers using Helmet
 app.use(
@@ -16,8 +54,7 @@ app.use(
   })
 );
 
-// CORS configuration
-
+// ✅ CORS configuration
 // app.use(cors({ origin: conf.FRONTEND_URL, credentials: true }));
 app.use(
   cors({
@@ -37,7 +74,7 @@ app.use(
   })
 );
 
-// Additional security headers
+// ✅ Additional security headers
 app.disable("x-powered-by");
 app.use((req, res, next) => {
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -51,22 +88,27 @@ app.use((req, res, next) => {
 });
 
 // Middleware for parsing JSON, cookies, and serving static files
-app.use(express.json());
 app.set("trust proxy", "loopback"); // Trust only localhost
 
-
-// app.use(express.static("public"));
+// ✅ Serve static files
 app.use(express.static(path.join(process.cwd(), "public")));
 
-app.use(cookieParser());
+// ✅ Debugging: Log if io is attached
+// app.use((req, res, next) => {
+//   console.log(
+//     "Inside Middleware, req.io:",
+//     req.io ? "✅ Defined" : "❌ Undefined"
+//   );
+//   next();
+// });
 
-// Routes
+// ✅ Routes
 import Routes from "./routes/index.js";
 app.use("/api", Routes);
 
-// Test routes
+// ✅ Test routes
 app.post("/testing", (req, res) => {
-  console.log("Testing");
+  console.log("✅ /testing route hit!");
   res.send("Hello, testing completed");
 });
 
@@ -74,4 +116,4 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Express Server with Security Measures!");
 });
 
-export { app };
+export { app, server };

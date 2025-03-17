@@ -9,11 +9,11 @@ const router = express.Router();
 // Apply rate limiter middleware (1 request per minute)
 router.post(
   "/claim",
-  rateLimiter(
-    claimCooldown,
-    1,
-    "❌ You can only claim a coupon once per minute."
-  ),
+//   rateLimiter(
+//     claimCooldown,
+//     1,
+//     "❌ You can only claim a coupon once per minute."
+//   ),
   claimCoupon
 );
 router.get("/", verifyToken, getAllCoupon);

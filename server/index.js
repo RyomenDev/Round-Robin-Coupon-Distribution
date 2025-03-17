@@ -1,12 +1,7 @@
-import cors from "cors";
 import connectDB from "./src/config/db.js";
-import { app } from "./src/app.js";
-import http from "http";
-import { initializeSocket } from "./src/controllers/coupon.controller.js"; // Import WebSocket logic
-import conf from "./conf.js";
+import { app, server } from "./src/app.js";
 
-const server = http.createServer(app);
-const io = initializeSocket(server); // Initialize Socket.io
+import conf from "./conf.js";
 
 const PORT = conf.PORT || 5000;
 

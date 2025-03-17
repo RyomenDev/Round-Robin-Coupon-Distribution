@@ -38,7 +38,7 @@ const CouponClaim = () => {
     });
 
     newSocket.on("couponAssigned", (assignedCoupon) => {
-    //   console.log(assignedCoupon);
+      //   console.log(assignedCoupon);
       setAssignedCoupon(assignedCoupon);
     });
 
@@ -46,6 +46,16 @@ const CouponClaim = () => {
       fetchCoupons();
       //   console.log("Updated User Count:", count);
       setUserCount(count);
+    });
+
+    // Listen for 'couponClaimed' event from server
+    newSocket.on("couponClaimed", ({ couponId, message }) => {
+      setMessage(message);
+      setCoupons((prevCoupons) =>
+        prevCoupons?.map((coupon) =>
+          coupon._id === couponId ? { ...coupon, isClaimed: true } : coupon
+        )
+      );
     });
 
     return () => {

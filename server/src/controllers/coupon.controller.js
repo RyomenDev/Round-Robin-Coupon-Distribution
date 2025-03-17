@@ -11,8 +11,10 @@ const guests = new Map(); // Store guest users with assigned coupons
 const claimHistory = new Map(); // Tracks claims (IP & Session)
 const claimCooldown = 300 * 1000; // 5-minute cooldown
 
+// let io;
 export function initializeSocket(server) {
   const io = new Server(server, {
+    //   io = new Server(server, {
     cors: {
       origin: conf.FRONTEND_URL,
       methods: ["GET", "POST"],
@@ -37,13 +39,15 @@ export function initializeSocket(server) {
 
   io.on("connection", async (socket) => {
     const userIp = socket.handshake.address;
-    console.log(`User connected: ${socket.id} from IP: ${userIp}`);
+    // console.log(`User connected: ${socket.id} from IP: ${userIp}`);
 
     activeUsers.set(socket.id, { ip: userIp });
     io.emit("updateUserCount", activeUsers.size);
 
     // Assign available coupon
     const availableCoupon = await Coupon.find({ isClaimed: false });
+    // console.log({availableCoupon});
+
     const assignedCoupon = availableCoupon[currentIndex];
     currentIndex = (currentIndex + 1) % availableCoupon.length;
 
@@ -55,7 +59,7 @@ export function initializeSocket(server) {
     }
 
     socket.on("disconnect", () => {
-      console.log(`User disconnected: ${socket.id}`);
+      //   console.log(`User disconnected: ${socket.id}`);
       activeUsers.delete(socket.id);
       io.emit("updateUserCount", activeUsers.size);
     });
@@ -64,8 +68,10 @@ export function initializeSocket(server) {
   return io;
 }
 
+// export { io };
+
 export const claimCoupon = async (req, res) => {
-  console.log("hi");
+  console.log("Claim");
   console.log(req.body);
 
   try {
@@ -95,14 +101,21 @@ export const claimCoupon = async (req, res) => {
         .status(400)
         .json({ message: "This coupon is unavailable or already claimed!" });
 
-    coupon.isClaimed = true;
-    coupon.claimedBy = clientIp;
-    coupon.claimedIp = clientIp;
-    coupon.claimedAt = new Date();
-    await coupon.save();
+    // coupon.isClaimed = true;
+    // coupon.claimedBy = clientIp;
+    // coupon.claimedIp = clientIp;
+    // coupon.claimedAt = new Date();
+    // await coupon.save();
 
-    claimHistory.set(clientIp, true);
-    claimHistory.set(userSession, true);
+    // claimHistory.set(clientIp, true);
+    // claimHistory.set(userSession, true);
+
+    // console.log("socket", req?.io);
+
+    // req.io.emit("couponClaimed", {
+    //   couponId,
+    //   message: `🎉 Coupon ${coupon.code} claimed!`,
+    // });
 
     res.json({ message: `🎉 Coupon claimed: ${coupon.code}`, coupon });
   } catch (error) {
