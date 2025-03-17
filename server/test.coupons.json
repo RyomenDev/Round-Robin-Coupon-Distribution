@@ -1,0 +1,150 @@
+[{
+  "_id": {
+    "$oid": "67d7948f51a1301d2b30f5ce"
+  },
+  "code": "Coupon10",
+  "discount": 10,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d7949651a1301d2b30f5d3"
+  },
+  "code": "Coupon20",
+  "discount": 20,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d7949c51a1301d2b30f5d8"
+  },
+  "code": "Coupon30",
+  "discount": 30,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d794a351a1301d2b30f5dd"
+  },
+  "code": "Coupon40",
+  "discount": 40,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d794a951a1301d2b30f5e2"
+  },
+  "code": "Coupon50",
+  "discount": 50,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d794ae51a1301d2b30f5e7"
+  },
+  "code": "save50",
+  "discount": 50,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d794b551a1301d2b30f5ec"
+  },
+  "code": "save40",
+  "discount": 40,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d794bb51a1301d2b30f5f1"
+  },
+  "code": "save30",
+  "discount": 30,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d794c151a1301d2b30f5f6"
+  },
+  "code": "save20",
+  "discount": 20,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67d794c951a1301d2b30f5fb"
+  },
+  "code": "save10",
+  "discount": 10,
+  "expirationDate": {
+    "$date": "2025-03-21T00:00:00.000Z"
+  },
+  "isClaimed": false,
+  "claimedBy": null,
+  "claimedIp": null,
+  "claimedAt": null,
+  "__v": 0
+}]
