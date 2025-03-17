@@ -50,13 +50,36 @@ const CouponClaim = () => {
 
     // Listen for 'couponClaimed' event from server
     newSocket.on("couponClaimed", ({ couponId, message }) => {
-      setMessage(message);
-      setCoupons((prevCoupons) =>
-        prevCoupons?.map((coupon) =>
-          coupon._id === couponId ? { ...coupon, isClaimed: true } : coupon
-        )
+      console.log({ couponId, message });
+      //   setMessage(message);
+      //   setCoupons((prevCoupons) =>
+      //     prevCoupons?.map((coupon) =>
+      //       coupon._id === couponId ? { ...coupon, isClaimed: true } : coupon
+      //     )
+      //   );
+      //   setCoupons((prevCoupons) =>
+      //     prevCoupons?.map((coupon) => {
+      //       if (coupon._id === couponId) {
+      //         setMessage(message); // Only set message when the correct coupon is updated
+      //         return { ...coupon, isClaimed: true };
+      //       }
+      //       return coupon;
+      //     })
+      //   );
+      console.log(
+        "assignedCoupon._id : couponId =",
+        assignedCoupon._id,
+        couponId
       );
+
+      if (assignedCoupon._id === couponId) {
+        setMessage(message);
+      }
+      console.log({ coupons });
     });
+    // newSocket.on("couponClaimed", ({ couponId, message }) => {
+    //   console.log({ couponId, message });
+    // });
 
     return () => {
       newSocket.disconnect(); // Disconnect when component unmounts

@@ -8,6 +8,7 @@ import conf from "../conf.js";
 import http from "http";
 import { initializeSocket } from "./controllers/coupon.controller.js"; // Import WebSocket logic
 // import { initializeSocket, io }
+// import { Server } from "socket.io";
 
 const app = express();
 
@@ -15,6 +16,7 @@ const app = express();
 const server = http.createServer(app);
 
 // ✅ Initialize Socket.io
+// const io = new Server(server, { cors: { origin: conf.FRONTEND_URL } });
 const io = initializeSocket(server);
 // initializeSocket(server);
 
@@ -31,7 +33,9 @@ app.use((req, res, next) => {
     // console.error("❌ io is undefined in middleware");
   } else {
     req.io = io;
-    // console.log(`✅ socket io attached to request for: ${req.method} ${req.url}`);
+    // console.log(
+    //   `📌 socket io attached to request for: ${req.method} ${req.url}`
+    // );
   }
   next();
 });
@@ -98,6 +102,21 @@ app.use(express.static(path.join(process.cwd(), "public")));
 //   console.log(
 //     "Inside Middleware, req.io:",
 //     req.io ? "✅ Defined" : "❌ Undefined"
+//   );
+//   next();
+// });
+
+// app.use((req, res, next) => {
+//   console.log(`🔍 Checking Middleware: ${req.method} ${req.url}`);
+//   console.log("✅ io in middleware:", io ? "Defined" : "❌ Undefined");
+//   console.log(
+//     "✅ req.io before assignment:",
+//     req.io ? "Defined" : "❌ Undefined"
+//   );
+//   req.io = io;
+//   console.log(
+//     "✅ req.io after assignment:",
+//     req.io ? "Defined" : "❌ Undefined"
 //   );
 //   next();
 // });

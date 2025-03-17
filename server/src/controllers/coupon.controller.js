@@ -4,10 +4,11 @@ import conf from "../../conf.js";
 import Coupon from "../models/Coupon.js";
 import { User } from "../models/user.model.js";
 
-const coupons = ["COUPON10", "DISCOUNT20", "SAVE30", "OFFER40"];
-let currentIndex = 0;
+let currentIndex = 0; // Rotating index for coupon assignment
 let activeUsers = new Map();
-const guests = new Map(); // Store guest users with assigned coupons
+const guests = new Map(); // Store userId, IP, and assigned coupon
+const assignedCoupons = new Set(); // Track assigned coupons to prevent reassignments
+
 const claimHistory = new Map(); // Tracks claims (IP & Session)
 const claimCooldown = 300 * 1000; // 5-minute cooldown
 
@@ -20,8 +21,6 @@ export function initializeSocket(server) {
       methods: ["GET", "POST"],
       credentials: true,
     },
-    //   pingInterval: 5000, // Prevents timeouts by sending a ping every 5 seconds
-    //   pingTimeout: 25000, // Extends the timeout period before disconnecting
   });
 
   io.use((socket, next) => {
@@ -39,30 +38,66 @@ export function initializeSocket(server) {
 
   io.on("connection", async (socket) => {
     const userIp = socket.handshake.address;
-    // console.log(`User connected: ${socket.id} from IP: ${userIp}`);
+    const userId = socket.userId;
 
-    activeUsers.set(socket.id, { ip: userIp });
+    console.log(
+      `User connected: ${socket.id} with userId: ${userId} from IP: ${userIp}`
+    );
+
+    activeUsers.set(socket.id, { userId, ip: userIp });
     io.emit("updateUserCount", activeUsers.size);
 
-    // Assign available coupon
-    const availableCoupon = await Coupon.find({ isClaimed: false });
-    // console.log({availableCoupon});
+    // Fetch unclaimed coupons
+    const availableCoupons = await Coupon.find({ isClaimed: false });
 
-    const assignedCoupon = availableCoupon[currentIndex];
-    currentIndex = (currentIndex + 1) % availableCoupon.length;
+    if (availableCoupons.length === 0) {
+      socket.emit("noCouponsAvailable");
+      return;
+    }
 
-    // console.log({ assignedCoupon, currentIndex });
+    // Ensure currentIndex stays within bounds
+    currentIndex = currentIndex % availableCoupons.length;
+
+    // Find a coupon that is not yet assigned
+    let assignedCoupon = null;
+    for (let i = 0; i < availableCoupons.length; i++) {
+      let index = (currentIndex + i) % availableCoupons.length; // Rotate through coupons
+      let coupon = availableCoupons[index];
+
+      if (!assignedCoupons.has(coupon.code)) {
+        assignedCoupon = coupon;
+        assignedCoupons.add(coupon.code);
+        guests.set(socket.id, { userId, ip: userIp, coupon: coupon.code });
+        currentIndex = (index + 1) % availableCoupons.length; // Move to the next coupon
+        break;
+      }
+    }
 
     if (assignedCoupon) {
-      guests.set(socket.id, assignedCoupon.code);
       socket.emit("couponAssigned", assignedCoupon);
+    } else {
+      socket.emit("noCouponsAvailable");
     }
 
     socket.on("disconnect", () => {
-      //   console.log(`User disconnected: ${socket.id}`);
+      console.log(`User disconnected: ${socket.id}`);
+
+      // Remove user from active users
       activeUsers.delete(socket.id);
       io.emit("updateUserCount", activeUsers.size);
+
+      // Release the coupon back into availability
+      const userData = guests.get(socket.id);
+      if (userData) {
+        assignedCoupons.delete(userData.coupon);
+        guests.delete(socket.id);
+      }
     });
+
+    //  console.log("Assigned Coupons:", assignedCoupons.size);
+    //  for (let i of assignedCoupons) {
+    //    console.log(i);
+    //  }
   });
 
   return io;
@@ -71,8 +106,8 @@ export function initializeSocket(server) {
 // export { io };
 
 export const claimCoupon = async (req, res) => {
-  console.log("Claim");
-  console.log(req.body);
+  //   console.log("Claim");
+  //   console.log(req.body);
 
   try {
     const clientIp =
@@ -112,10 +147,15 @@ export const claimCoupon = async (req, res) => {
 
     // console.log("socket", req?.io);
 
-    // req.io.emit("couponClaimed", {
-    //   couponId,
-    //   message: `🎉 Coupon ${coupon.code} claimed!`,
-    // });
+    if (req.io) {
+      req.io.emit("couponClaimed", {
+        couponId,
+        message: `🎉 Coupon ${coupon.code} claimed!`,
+      });
+      //   console.log("emit - couponClaimed");
+    } else {
+      console.error("❌ Socket.io is NOT attached to request.");
+    }
 
     res.json({ message: `🎉 Coupon claimed: ${coupon.code}`, coupon });
   } catch (error) {

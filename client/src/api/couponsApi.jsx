@@ -31,7 +31,7 @@ const handleError = (error) => {
 
 // Add a new coupon
 export const claimSingleCoupon = async ({ couponId }) => {
-  console.log({ couponId });
+  //   console.log({ couponId });
   try {
     const response = await apiClient.post(
       "/claim",
