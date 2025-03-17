@@ -9,7 +9,7 @@ let activeUsers = new Map();
 const guests = new Map(); // Store userId, IP, and assigned coupon
 const assignedCoupons = new Set(); // Track assigned coupons to prevent reassignments
 
-const COUPON_TIMEOUT = 30 * 1000; // 30 seconds
+const COUPON_TIMEOUT = 2 * 1000; // 30 seconds
 
 const claimHistory = new Map(); // Tracks claims (IP & Session)
 const claimCooldown = 300 * 1000; // 5-minute cooldown
@@ -37,7 +37,6 @@ export function initializeSocket(server) {
       return next(new Error("Invalid or expired token"));
     }
   });
-
 
   io.on("connection", async (socket) => {
     const userIp = socket.handshake.address;
@@ -154,16 +153,16 @@ export const claimCoupon = async (req, res) => {
         .status(400)
         .json({ message: "This coupon is unavailable or already claimed!" });
 
-    // coupon.isClaimed = true;
-    // coupon.claimedBy = clientIp;
-    // coupon.claimedIp = clientIp;
-    // coupon.claimedAt = new Date();
-    // await coupon.save();
+    coupon.isClaimed = true;
+    coupon.claimedBy = clientIp;
+    coupon.claimedIp = clientIp;
+    coupon.claimedAt = new Date();
+    await coupon.save();
 
-    // claimHistory.set(clientIp, true);
-    // claimHistory.set(userSession, true);
+    claimHistory.set(clientIp, true);
+    claimHistory.set(userSession, true);
 
-    // console.log("socket", req?.io);
+    console.log("socket", req?.io);
 
     if (req.io) {
       req.io.emit("couponClaimed", {
