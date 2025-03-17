@@ -42,9 +42,9 @@ export function initializeSocket(server) {
     const userIp = socket.handshake.address;
     const userId = socket.userId;
 
-    console.log(
-      `User connected: ${socket.id} with userId: ${userId} from IP: ${userIp}`
-    );
+    // console.log(
+    //   `User connected: ${socket.id} with userId: ${userId} from IP: ${userIp}`
+    // );
 
     activeUsers.set(socket.id, { userId, ip: userIp });
     io.emit("updateUserCount", activeUsers.size);
@@ -52,7 +52,7 @@ export function initializeSocket(server) {
     assignCoupon(socket, userId, userIp, io);
 
     socket.on("disconnect", () => {
-      console.log(`User disconnected: ${socket.id}`);
+      //   console.log(`User disconnected: ${socket.id}`);
 
       activeUsers.delete(socket.id);
       io.emit("updateUserCount", activeUsers.size);
@@ -162,7 +162,7 @@ export const claimCoupon = async (req, res) => {
     claimHistory.set(clientIp, true);
     claimHistory.set(userSession, true);
 
-    console.log("socket", req?.io);
+    // console.log("socket", req?.io);
 
     if (req.io) {
       req.io.emit("couponClaimed", {
